@@ -163,6 +163,7 @@ def index():
     display_name = ''
     blacklist = set(session.get('blacklist', []))
     whitelist = set(session.get('whitelist', []))
+    valid_duel_decks = []
     
     if game_mode_id:
         selected_game_mode = next((mode for mode in game_modes if mode['id'] == game_mode_id), None)
