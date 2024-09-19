@@ -1,0 +1,23 @@
+LavaLoon SD MegaM: valkyrie-ev1,zap-ev1,lava-hound,balloon,void,skeleton-dragons,mega-minion,tombstone
+EGolem SK NW Rage: wizard-ev1,skeletons-ev1,elixir-golem,skeleton-king,void,night-witch,arrows,rage
+Double Prince Phoenix Rage: goblin-giant-ev1,zap-ev1,prince,phoenix,dark-prince,bomber,arrows,rage
+EvoMortar SK Miner Cart: mortar-ev1,bats-ev1,miner,skeleton-king,cannon-cart,goblin-gang,arrows,spear-goblins
+GY IWiz BBD Nado: bomber-ev1,knight-ev1,graveyard,baby-dragon,poison,ice-wizard,tornado,tombstone
+EvoMortar SK Miner Cart: mortar-ev1,bats-ev1,miner,skeleton-king,cannon-cart,mother-witch,goblin-gang,arrows
+RG FishBoy Ghost 3.0 Cycle: royal-giant-ev1,wizard-ev1,void,royal-ghost,fisherman,skeletons,electro-spirit,the-log
+RHogs AQ 2.9 Cycle: skeletons-ev1,ice-spirit-ev1,royal-hogs,archer-queen,earthquake,royal-delivery,the-log,cannon
+LavaLoon Double Dragon: valkyrie-ev1,zap-ev1,lava-hound,balloon,void,inferno-dragon,skeleton-dragons,guards
+RamRider Pekka Ghost: wizard-ev1,zap-ev1,ram-rider,pekka,void,royal-ghost,bandit,electro-spirit
+X-Bow 3.0 Cycle: archers-ev1,tesla-ev1,x-bow,knight,fireball,skeletons,electro-spirit,the-log
+MK Miner ID Bait: bats-ev1,zap-ev1,miner,skeleton-barrel,mega-knight,inferno-dragon,goblin-gang,spear-goblins
+MA Nado: goblin-drill-ev1,skeletons-ev1,goblin-demolisher,magic-archer,knight,tornado,the-log,bomb-tower
+EvoMortar SK Miner SD: mortar-ev1,bats-ev1,miner,skeleton-king,cannon-cart,skeleton-dragons,goblin-gang,arrows
+2.9 Cycle: goblin-drill-ev1,tesla-ev1,goblin-demolisher,knight,poison,skeletons,ice-spirit,the-log
+Hog Execnado Control: valkyrie-ev1,ice-spirit-ev1,hog-rider,rocket,executioner,goblins,tornado,the-log
+EvoMortar SK Miner SD: mortar-ev1,bomber-ev1,miner,skeleton-king,cannon-cart,skeleton-dragons,goblin-gang,arrows
+LavaLoon Double Dragon: valkyrie-ev1,zap-ev1,lava-hound,balloon,void,inferno-dragon,skeleton-dragons,tombstone
+GY IWiz BBD Nado: knight-ev1,goblin-cage-ev1,graveyard,baby-dragon,poison,ice-wizard,tornado,barbarian-barrel
+Hog 2.6 Cycle: skeletons-ev1,ice-spirit-ev1,hog-rider,musketeer,fireball,ice-golem,the-log,cannon
+Giant GY NW: bomber-ev1,zap-ev1,graveyard,giant,night-witch,minions,guards,arrows
+Hog MM 2.8 Cycle: firecracker-ev1,tesla-ev1,hog-rider,mighty-miner,earthquake,skeletons,ice-spirit,the-log
+Incognito: goblin-barrel-ev1,knight-ev1,rocket,princess,goblin-gang,ice-spirit,the-log,inferno-tower

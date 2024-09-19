@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Valid Duel Decks</title>
+    <!-- Link to the external CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Valid Duel Decks</h1>
+
+    <!-- Game Mode Selection -->
+    <form method="get" action="/">
+        <label for="game-mode-select">Select Game Mode:</label>
+        <select id="game-mode-select" name="game_mode_id">
+            {% for mode in game_modes %}
+                <option value="{{ mode.id }}" {% if mode.id == selected_game_mode_id %}selected{% endif %}>{{ mode.display_name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Load Decks</button>
+    </form>
+
+    {% if duel_decks %}
+        <p>Found {{ duel_decks|length }} valid duel decks for game mode: {{ display_name }}.</p>
+        <!-- Display the duel decks -->
+        {% for duel_deck in duel_decks %}
+            <div class="duel-deck">
+                <div class="deck-names">
+                    Duel Deck {{ loop.index }}
+                </div>
+                <div class="decks-container">
+                    {% for deck in duel_deck.decks %}
+                        <div class="deck">
+                            <div class="deck-title">{{ deck.deck_name }}</div>
+                            <ul class="cards">
+                                {% for card in deck.cards %}
+                                    <li>
+                                        <img src="{{ url_for('static', filename='cards/' + card + '.png') }}" alt="{{ card }}" title="{{ card }}">
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                </div>
+                <hr>
+            </div>
+        {% endfor %}
+    {% else %}
+        {% if selected_game_mode_id %}
+            <p>No valid duel decks found for game mode: {{ display_name }}.</p>
+        {% else %}
+            <p>Please select a game mode and click "Load Decks" to display duel decks.</p>
+        {% endif %}
+    {% endif %}
+
+</body>
+</html>
