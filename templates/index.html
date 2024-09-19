@@ -3,8 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>Valid Duel Decks</title>
-    <!-- Link to the external CSS file -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* Basic styling for better visualization */
+        .filter-section {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 15px;
+        }
+        .filter-section h2 {
+            margin-top: 0;
+        }
+        .current-filters {
+            margin-top: 10px;
+        }
+        .current-filters ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .current-filters li {
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .duel-deck {
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
     <h1>Valid Duel Decks</h1>
@@ -13,12 +37,99 @@
     <form method="get" action="/">
         <label for="game-mode-select">Select Game Mode:</label>
         <select id="game-mode-select" name="game_mode_id">
+            <option value="">-- Select Game Mode --</option>
             {% for mode in game_modes %}
                 <option value="{{ mode.id }}" {% if mode.id == selected_game_mode_id %}selected{% endif %}>{{ mode.display_name }}</option>
             {% endfor %}
         </select>
         <button type="submit">Load Decks</button>
     </form>
+
+    {% if selected_game_mode_id %}
+        <div class="filter-section">
+            <h2>Filter Decks</h2>
+            
+            <!-- Blacklist Dropdown -->
+            {% if common_cards %}
+                <form method="post" action="{{ url_for('add_to_blacklist') }}?game_mode_id={{ selected_game_mode_id }}">
+                    <label for="blacklist-select">Blacklist a Card:</label>
+                    <select id="blacklist-select" name="card" required>
+                        <option value="">-- Select a Card to Blacklist --</option>
+                        {% for card in common_cards %}
+                            <option value="{{ card }}">{{ card.replace('-', ' ').title() }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit">Add to Blacklist</button>
+                </form>
+            {% else %}
+                <p>No common cards available for filtering.</p>
+            {% endif %}
+
+            <!-- Whitelist Dropdown -->
+            {% if common_cards %}
+                <form method="post" action="{{ url_for('add_to_whitelist') }}?game_mode_id={{ selected_game_mode_id }}">
+                    <label for="whitelist-select">Whitelist a Card:</label>
+                    <select id="whitelist-select" name="card" required>
+                        <option value="">-- Select a Card to Whitelist --</option>
+                        {% for card in common_cards %}
+                            <option value="{{ card }}">{{ card.replace('-', ' ').title() }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit">Add to Whitelist</button>
+                </form>
+            {% else %}
+                <p>No common cards available for filtering.</p>
+            {% endif %}
+
+            <!-- Display Current Blacklist -->
+            <div class="current-filters">
+                <h3>Current Blacklist:</h3>
+                {% if blacklist %}
+                    <ul>
+                        {% for card in blacklist %}
+                            <li>
+                                {{ card.replace('-', ' ').title() }}
+                                <form method="post" action="{{ url_for('remove_from_blacklist') }}?game_mode_id={{ selected_game_mode_id }}" style="display:inline;">
+                                    <input type="hidden" name="card" value="{{ card }}">
+                                    <button type="submit">Remove</button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No cards blacklisted.</p>
+                {% endif %}
+            </div>
+
+            <!-- Display Current Whitelist -->
+            <div class="current-filters">
+                <h3>Current Whitelist:</h3>
+                {% if whitelist %}
+                    <ul>
+                        {% for card in whitelist %}
+                            <li>
+                                {{ card.replace('-', ' ').title() }}
+                                <form method="post" action="{{ url_for('remove_from_whitelist') }}?game_mode_id={{ selected_game_mode_id }}" style="display:inline;">
+                                    <input type="hidden" name="card" value="{{ card }}">
+                                    <button type="submit">Remove</button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No cards whitelisted.</p>
+                {% endif %}
+            </div>
+
+            <!-- Add within the filter-section div -->
+            <form method="post" action="{{ url_for('clear_blacklist') }}?game_mode_id={{ selected_game_mode_id }}" style="display:inline;">
+                <button type="submit">Clear Blacklist</button>
+            </form>
+            <form method="post" action="{{ url_for('clear_whitelist') }}?game_mode_id={{ selected_game_mode_id }}" style="display:inline;">
+                <button type="submit">Clear Whitelist</button>
+            </form>
+        </div>
+    {% endif %}
 
     {% if duel_decks %}
         <p>Found {{ duel_decks|length }} valid duel decks for game mode: {{ display_name }}.</p>
@@ -35,7 +146,7 @@
                             <ul class="cards">
                                 {% for card in deck.cards %}
                                     <li>
-                                        <img src="{{ url_for('static', filename='cards/' + card + '.png') }}" alt="{{ card }}" title="{{ card }}">
+                                        <img src="{{ url_for('static', filename='cards/' + card + '.png') }}" alt="{{ card }}" title="{{ card.replace('-', ' ').title() }}">
                                     </li>
                                 {% endfor %}
                             </ul>
