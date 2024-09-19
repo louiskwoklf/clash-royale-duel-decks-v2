@@ -80,8 +80,9 @@ def find_duel_decks(decks):
     for duel_deck in combinations(decks, 4):
         # Collect all card names in the duel deck
         all_cards = [card for deck in duel_deck for card in deck['cards']]
+        all_cards_cleaned = [card.removesuffix("-ev1") for card in all_cards]
         # Check if there are any duplicate cards
-        if len(all_cards) == len(set(all_cards)):
+        if len(all_cards_cleaned) == len(set(all_cards_cleaned)):
             # No duplicates, add to valid duel decks
             valid_duel_decks.append({'decks': duel_deck})
 
