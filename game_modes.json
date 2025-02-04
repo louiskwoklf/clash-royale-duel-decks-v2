@@ -1,12 +1,7 @@
 [
     {
-        "id": "global_tournament",
-        "display_name": "Global Tournament",
-        "url": "https://royaleapi.com/decks/popular?time=7d&sort=pop&size=30&players=PvP&min_trophies=0&max_trophies=9000&min_ranked_trophies=0&max_ranked_trophies=4000&min_elixir=1&max_elixir=9&evo=2&min_cycle_elixir=4&max_cycle_elixir=28&mode=detail&type=Global_Tournament&&&global_exclude=false"
-    },
-    {
         "id": "ultimate_champion",
         "display_name": "Ultimate Champion",
-        "url": "https://royaleapi.com/decks/popular?time=7d&sort=pop&size=30&players=PvP&min_trophies=0&max_trophies=9000&min_ranked_trophies=0&max_ranked_trophies=4000&min_elixir=1&max_elixir=9&evo=2&min_cycle_elixir=4&max_cycle_elixir=28&mode=detail&type=TopRanked&&&global_exclude=false"
+        "url": "https://royaleapi.com/decks/popular?time=3d&sort=pop&size=30&players=PvP&min_trophies=0&max_trophies=9000&min_ranked_trophies=0&max_ranked_trophies=4000&min_elixir=1&max_elixir=9&evo=2&min_cycle_elixir=4&max_cycle_elixir=28&mode=detail&type=TopRanked&&&global_exclude=false"
     }
 ]
