@@ -4,39 +4,14 @@
     <meta charset="UTF-8">
     <title>Valid Duel Decks</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <style>
-        /* Basic styling for better visualization */
-        .filter-section {
-            margin-top: 20px;
-            border: 1px solid #ccc;
-            padding: 15px;
-        }
-        .filter-section h2 {
-            margin-top: 0;
-        }
-        .current-filters {
-            margin-top: 10px;
-        }
-        .current-filters ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .current-filters li {
-            display: inline-block;
-            margin-right: 10px;
-        }
-        .duel-deck {
-            margin-bottom: 20px;
-        }
-    </style>
 </head>
 <body>
     <h1>Valid Duel Decks</h1>
 
     <!-- Allowed Repeated Cards Count Input -->
     <form method="get" action="/">
-        <label for="number-input">Allowed Repeated Cards (0-7):</label>
-        <input type="number" id="allowed-repeated-cards" name="allowed_repeated_cards" min="0" max="7" required value="{{ allowed_repeated_cards or '' }}">
+        <label for="allowed-repeated-cards">Allowed Repeated Cards (0-7):</label>
+        <input type="number" id="allowed-repeated-cards" name="allowed_repeated_cards" min="0" max="7" required value="{{ allowed_repeated_cards }}">
         <button type="submit">Submit</button>
     </form>
 

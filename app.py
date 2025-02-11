@@ -152,13 +152,11 @@ def get_common_cards(valid_duel_decks):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     initialize_session()
-    allowed_repeated_cards_param = request.args.get('allowed_repeated_cards')
-    allowed_repeated_cards = None
-    if allowed_repeated_cards_param is not None and allowed_repeated_cards_param != '':
-        try:
-            allowed_repeated_cards = int(allowed_repeated_cards_param)
-        except ValueError:
-            allowed_repeated_cards = 0
+    allowed_repeated_cards_param = request.args.get('allowed_repeated_cards', '0')
+    try:
+        allowed_repeated_cards = int(allowed_repeated_cards_param)
+    except ValueError:
+        allowed_repeated_cards = 0
 
     blacklist = set(session.get('blacklist', []))
     whitelist = set(session.get('whitelist', []))
