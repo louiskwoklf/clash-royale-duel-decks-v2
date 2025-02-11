@@ -106,9 +106,7 @@
         <!-- Display the duel decks -->
         {% for duel_deck in duel_decks %}
             <div class="duel-deck">
-                <div class="deck-names">
-                    Duel Deck {{ loop.index }}
-                </div>
+                <div class="deck-names">Duel Deck {{ loop.index }} {%- if duel_deck.duplicate_count != 0 -%}<small style="color: red;"> ({{ duel_deck.duplicate_count }} repeated card{%- if duel_deck.duplicate_count != 1 -%}s{%- endif -%}{%- if duel_deck.duplicate_cards -%}: {{ duel_deck.duplicate_cards | join(', ') }}{%- endif -%})</small>{%- else -%}<small style="color: green;"> ({{ duel_deck.duplicate_count }} repeated card{%- if duel_deck.duplicate_count != 1 -%}s{%- endif -%})</small>{%- endif -%}</div>
                 <div class="decks-container">
                     {% for deck in duel_deck.decks %}
                         <div class="deck">

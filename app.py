@@ -1,8 +1,9 @@
-import requests
-from flask import Flask, render_template, request, session, redirect, url_for
 from bs4 import BeautifulSoup
-import os
+from collections import Counter
+from flask import Flask, render_template, request, session, redirect, url_for
 from itertools import combinations
+import os
+import requests
 
 app = Flask(__name__)
 
@@ -71,18 +72,22 @@ def extract_decks(html_content):
 
 
 def find_duel_decks(decks, allowed_repeated_cards):
-    """
-    Create duel decks (combinations of 4 decks) that satisfy the allowed duplicate rule.
-    A duel deck is valid if the total number of duplicate cards (total cards minus unique cards)
-    is less than or equal to allowed_repeated_cards.
-    """
     valid_duel_decks = []
     for duel_deck in combinations(decks, 4):
         all_cards = [card for deck in duel_deck for card in deck['cards']]
         all_cards_cleaned = [card.removesuffix("-ev1") for card in all_cards]
         duplicate_count = len(all_cards_cleaned) - len(set(all_cards_cleaned))
+        
+        counts = Counter(all_cards_cleaned)
+        duplicate_cards = [card for card, count in counts.items() if count > 1]
+        
         if duplicate_count <= allowed_repeated_cards:
-            valid_duel_decks.append({'decks': duel_deck})
+            valid_duel_decks.append({
+                'decks': duel_deck, 
+                'duplicate_count': duplicate_count,
+                'duplicate_cards': duplicate_cards
+            })
+    valid_duel_decks = sorted(valid_duel_decks, key=lambda d: d['duplicate_count'])
     return valid_duel_decks
 
 
