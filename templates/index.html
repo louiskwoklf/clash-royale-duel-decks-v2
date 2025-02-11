@@ -33,25 +33,20 @@
 <body>
     <h1>Valid Duel Decks</h1>
 
-    <!-- Game Mode Selection -->
+    <!-- Allowed Repeated Cards Count Input -->
     <form method="get" action="/">
-        <label for="game-mode-select">Select Game Mode:</label>
-        <select id="game-mode-select" name="game_mode_id">
-            <option value="">-- Select Game Mode --</option>
-            {% for mode in game_modes %}
-                <option value="{{ mode.id }}" {% if mode.id == selected_game_mode_id %}selected{% endif %}>{{ mode.display_name }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit">Load Decks</button>
+        <label for="number-input">Allowed Repeated Cards (0-7):</label>
+        <input type="number" id="allowed-repeated-cards" name="allowed_repeated_cards" min="0" max="7" required value="{{ allowed_repeated_cards or '' }}">
+        <button type="submit">Submit</button>
     </form>
 
-    {% if selected_game_mode_id %}
+    {% if allowed_repeated_cards is defined and allowed_repeated_cards != '' %}
         <div class="filter-section">
             <h2>Filter Decks</h2>
             
             <!-- Blacklist Dropdown -->
             {% if common_cards %}
-                <form method="post" action="{{ url_for('add_to_blacklist') }}?game_mode_id={{ selected_game_mode_id }}">
+                <form method="post" action="{{ url_for('add_to_blacklist') }}?allowed_repeated_cards={{ allowed_repeated_cards }}">
                     <label for="blacklist-select">Blacklist a Card:</label>
                     <select id="blacklist-select" name="card" required>
                         <option value="">-- Select a Card to Blacklist --</option>
@@ -67,7 +62,7 @@
 
             <!-- Whitelist Dropdown -->
             {% if common_cards %}
-                <form method="post" action="{{ url_for('add_to_whitelist') }}?game_mode_id={{ selected_game_mode_id }}">
+                <form method="post" action="{{ url_for('add_to_whitelist') }}?allowed_repeated_cards={{ allowed_repeated_cards }}">
                     <label for="whitelist-select">Whitelist a Card:</label>
                     <select id="whitelist-select" name="card" required>
                         <option value="">-- Select a Card to Whitelist --</option>
@@ -89,7 +84,7 @@
                         {% for card in blacklist %}
                             <li>
                                 {{ card.replace('-', ' ').title() }}
-                                <form method="post" action="{{ url_for('remove_from_blacklist') }}?game_mode_id={{ selected_game_mode_id }}" style="display:inline;">
+                                <form method="post" action="{{ url_for('remove_from_blacklist') }}?allowed_repeated_cards={{ allowed_repeated_cards }}" style="display:inline;">
                                     <input type="hidden" name="card" value="{{ card }}">
                                     <button type="submit">Remove</button>
                                 </form>
@@ -109,7 +104,7 @@
                         {% for card in whitelist %}
                             <li>
                                 {{ card.replace('-', ' ').title() }}
-                                <form method="post" action="{{ url_for('remove_from_whitelist') }}?game_mode_id={{ selected_game_mode_id }}" style="display:inline;">
+                                <form method="post" action="{{ url_for('remove_from_whitelist') }}?allowed_repeated_cards={{ allowed_repeated_cards }}" style="display:inline;">
                                     <input type="hidden" name="card" value="{{ card }}">
                                     <button type="submit">Remove</button>
                                 </form>
@@ -121,18 +116,18 @@
                 {% endif %}
             </div>
 
-            <!-- Add within the filter-section div -->
-            <form method="post" action="{{ url_for('clear_blacklist') }}?game_mode_id={{ selected_game_mode_id }}" style="display:inline;">
+            <!-- Clear Filter Forms -->
+            <form method="post" action="{{ url_for('clear_blacklist') }}?allowed_repeated_cards={{ allowed_repeated_cards }}" style="display:inline;">
                 <button type="submit">Clear Blacklist</button>
             </form>
-            <form method="post" action="{{ url_for('clear_whitelist') }}?game_mode_id={{ selected_game_mode_id }}" style="display:inline;">
+            <form method="post" action="{{ url_for('clear_whitelist') }}?allowed_repeated_cards={{ allowed_repeated_cards }}" style="display:inline;">
                 <button type="submit">Clear Whitelist</button>
             </form>
         </div>
     {% endif %}
 
     {% if duel_decks %}
-        <p>Found {{ duel_decks|length }} valid duel decks for game mode: {{ display_name }}.</p>
+        <p>Found {{ duel_decks|length }} valid duel decks with up to {{ allowed_repeated_cards }} repeated cards allowed.</p>
         <!-- Display the duel decks -->
         {% for duel_deck in duel_decks %}
             <div class="duel-deck">
@@ -157,10 +152,10 @@
             </div>
         {% endfor %}
     {% else %}
-        {% if selected_game_mode_id %}
-            <p>No valid duel decks found for game mode: {{ display_name }}.</p>
+        {% if allowed_repeated_cards is defined and allowed_repeated_cards != '' %}
+            <p>No valid duel decks found with up to {{ allowed_repeated_cards }} repeated cards allowed.</p>
         {% else %}
-            <p>Please select a game mode and click "Load Decks" to display duel decks.</p>
+            <p>Please enter the number of allowed repeated cards and click "Submit" to display duel decks.</p>
         {% endif %}
     {% endif %}
 

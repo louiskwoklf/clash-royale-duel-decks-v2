@@ -2,7 +2,6 @@ import requests
 from flask import Flask, render_template, request, session, redirect, url_for
 from bs4 import BeautifulSoup
 import os
-import json
 from itertools import combinations
 
 app = Flask(__name__)
@@ -10,11 +9,16 @@ app = Flask(__name__)
 with open(os.path.join(app.static_folder, 'secret_key.txt'), 'r') as f:
     app.secret_key = f.read().strip()
 
+DECKS_URL = "https://royaleapi.com/decks/popular?time=7d&sort=pop&size=30&players=PvP&min_trophies=0&max_trophies=9000&min_ranked_trophies=0&max_ranked_trophies=4000&min_elixir=1&max_elixir=9&evo=2&min_cycle_elixir=4&max_cycle_elixir=28&mode=detail&type=TopRanked&&&global_exclude=false"
+
+
 def fetch_html(url):
     headers = {
-        "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                       "AppleWebKit/537.36 (KHTML, like Gecko) "
-                       "Chrome/91.0.4472.124 Safari/537.36"),
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/91.0.4472.124 Safari/537.36"
+        ),
         "Accept-Language": "en-US,en;q=0.9",
         "Accept-Encoding": "gzip, deflate",
     }
@@ -66,15 +70,19 @@ def extract_decks(html_content):
     return decks
 
 
-def find_duel_decks(decks):
+def find_duel_decks(decks, allowed_repeated_cards):
+    """
+    Create duel decks (combinations of 4 decks) that satisfy the allowed duplicate rule.
+    A duel deck is valid if the total number of duplicate cards (total cards minus unique cards)
+    is less than or equal to allowed_repeated_cards.
+    """
     valid_duel_decks = []
-
     for duel_deck in combinations(decks, 4):
         all_cards = [card for deck in duel_deck for card in deck['cards']]
         all_cards_cleaned = [card.removesuffix("-ev1") for card in all_cards]
-        if len(all_cards_cleaned) == len(set(all_cards_cleaned)):
+        duplicate_count = len(all_cards_cleaned) - len(set(all_cards_cleaned))
+        if duplicate_count <= allowed_repeated_cards:
             valid_duel_decks.append({'decks': duel_deck})
-
     return valid_duel_decks
 
 
@@ -106,19 +114,6 @@ def ensure_card_images(decks):
     for deck in decks:
         for card in deck['cards']:
             get_card_image(card)
-
-
-def load_game_modes(file_path='game_modes.json'):
-    if not os.path.exists(file_path):
-        print(f"Game modes file '{file_path}' not found.")
-        return []
-    with open(file_path, 'r', encoding='utf-8') as f:
-        try:
-            game_modes = json.load(f)
-            return game_modes
-        except json.JSONDecodeError as e:
-            print(f"Error parsing game modes file: {e}")
-            return []
 
 
 def initialize_session():
@@ -157,42 +152,34 @@ def get_common_cards(valid_duel_decks):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     initialize_session()
-    game_modes = load_game_modes()
-    game_mode_id = request.args.get('game_mode_id')
-    selected_game_mode = None
-    display_name = ''
+    allowed_repeated_cards_param = request.args.get('allowed_repeated_cards')
+    allowed_repeated_cards = None
+    if allowed_repeated_cards_param is not None and allowed_repeated_cards_param != '':
+        try:
+            allowed_repeated_cards = int(allowed_repeated_cards_param)
+        except ValueError:
+            allowed_repeated_cards = 0
+
     blacklist = set(session.get('blacklist', []))
     whitelist = set(session.get('whitelist', []))
     valid_duel_decks = []
-    
-    if game_mode_id:
-        selected_game_mode = next((mode for mode in game_modes if mode['id'] == game_mode_id), None)
-        if not selected_game_mode:
-            return render_template('error.html', message='Invalid game mode selected.')
-        
-        html_content = fetch_html(selected_game_mode['url'])
+    decks = []
+    filtered_valid_duel_decks = []
+
+    if allowed_repeated_cards is not None:
+        html_content = fetch_html(DECKS_URL)
         if html_content:
             decks = extract_decks(html_content)
             ensure_card_images(decks)
-            valid_duel_decks = find_duel_decks(decks)
+            valid_duel_decks = find_duel_decks(decks, allowed_repeated_cards)
             filtered_valid_duel_decks = filter_duel_decks(valid_duel_decks, blacklist, whitelist)
-        else:
-            decks = []
-            filtered_valid_duel_decks = []
-        
-        display_name = selected_game_mode['display_name']
-    else:
-        decks = []
-        filtered_valid_duel_decks = []
-    
+
     common_cards = get_common_cards(valid_duel_decks)
-    
+
     return render_template(
         'index.html',
         duel_decks=filtered_valid_duel_decks,
-        game_modes=game_modes,
-        selected_game_mode_id=game_mode_id,
-        display_name=display_name,
+        allowed_repeated_cards=allowed_repeated_cards,
         common_cards=common_cards,
         blacklist=list(blacklist),
         whitelist=list(whitelist)
@@ -207,7 +194,7 @@ def add_to_blacklist():
         blacklist = set(session['blacklist'])
         blacklist.add(card)
         session['blacklist'] = list(blacklist)
-    return redirect(url_for('index', game_mode_id=request.args.get('game_mode_id')))
+    return redirect(url_for('index', allowed_repeated_cards=request.args.get('allowed_repeated_cards')))
 
 
 @app.route('/remove_from_blacklist', methods=['POST'])
@@ -218,7 +205,7 @@ def remove_from_blacklist():
         blacklist = set(session['blacklist'])
         blacklist.discard(card)
         session['blacklist'] = list(blacklist)
-    return redirect(url_for('index', game_mode_id=request.args.get('game_mode_id')))
+    return redirect(url_for('index', allowed_repeated_cards=request.args.get('allowed_repeated_cards')))
 
 
 @app.route('/add_to_whitelist', methods=['POST'])
@@ -229,7 +216,7 @@ def add_to_whitelist():
         whitelist = set(session['whitelist'])
         whitelist.add(card)
         session['whitelist'] = list(whitelist)
-    return redirect(url_for('index', game_mode_id=request.args.get('game_mode_id')))
+    return redirect(url_for('index', allowed_repeated_cards=request.args.get('allowed_repeated_cards')))
 
 
 @app.route('/remove_from_whitelist', methods=['POST'])
@@ -240,21 +227,21 @@ def remove_from_whitelist():
         whitelist = set(session['whitelist'])
         whitelist.discard(card)
         session['whitelist'] = list(whitelist)
-    return redirect(url_for('index', game_mode_id=request.args.get('game_mode_id')))
+    return redirect(url_for('index', allowed_repeated_cards=request.args.get('allowed_repeated_cards')))
 
 
 @app.route('/clear_blacklist', methods=['POST'])
 def clear_blacklist():
     initialize_session()
     session['blacklist'] = []
-    return redirect(url_for('index', game_mode_id=request.args.get('game_mode_id')))
+    return redirect(url_for('index', allowed_repeated_cards=request.args.get('allowed_repeated_cards')))
 
 
 @app.route('/clear_whitelist', methods=['POST'])
 def clear_whitelist():
     initialize_session()
     session['whitelist'] = []
-    return redirect(url_for('index', game_mode_id=request.args.get('game_mode_id')))
+    return redirect(url_for('index', allowed_repeated_cards=request.args.get('allowed_repeated_cards')))
 
 
 if __name__ == '__main__':
