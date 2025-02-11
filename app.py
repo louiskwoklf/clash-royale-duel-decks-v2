@@ -10,7 +10,7 @@ app = Flask(__name__)
 with open(os.path.join(app.static_folder, 'secret_key.txt'), 'r') as f:
     app.secret_key = f.read().strip()
 
-DECKS_URL = "https://royaleapi.com/decks/popular?time=7d&sort=pop&size=30&players=PvP&min_trophies=0&max_trophies=9000&min_ranked_trophies=0&max_ranked_trophies=4000&min_elixir=1&max_elixir=9&evo=2&min_cycle_elixir=4&max_cycle_elixir=28&mode=detail&type=TopRanked&&&global_exclude=false"
+DECKS_URL = "https://royaleapi.com/decks/popular?time=3d&sort=pop&size=30&players=PvP&min_trophies=0&max_trophies=9000&min_ranked_trophies=0&max_ranked_trophies=4000&min_elixir=1&max_elixir=9&evo=2&min_cycle_elixir=4&max_cycle_elixir=28&mode=detail&type=TopRanked&&&global_exclude=false"
 
 
 def fetch_html(url):
@@ -113,6 +113,21 @@ def get_card_image(card_name):
             print(f'Failed to download image for {card_name}')
             print(f'HTTP status code: {response.status_code}')
             print(f'Attempted URL: {image_url}')
+
+
+@app.template_filter('format_card')
+def format_card(card):
+    if card.endswith("-ev1"):
+        card = card[:-4] + " evo"
+    
+    if card.lower() in ["x-bow"]:
+        parts = card.split()
+        parts[0] = "X-Bow"
+        for i in range(1, len(parts)):
+            parts[i] = parts[i].title()
+        return " ".join(parts)
+    
+    return card.replace('-', ' ').title()
 
 
 def ensure_card_images(decks):
