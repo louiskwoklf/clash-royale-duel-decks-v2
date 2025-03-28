@@ -10,7 +10,7 @@ app = Flask(__name__)
 with open(os.path.join(app.static_folder, 'secret_key.txt'), 'r') as f:
     app.secret_key = f.read().strip()
 
-DECKS_URL = "https://royaleapi.com/decks/popular?time=3d&sort=pop&size=30&players=PvP&min_trophies=0&max_trophies=9000&min_ranked_trophies=0&max_ranked_trophies=4000&min_elixir=1&max_elixir=9&evo=2&min_cycle_elixir=4&max_cycle_elixir=28&mode=detail&type=TopRanked&&&global_exclude=false"
+DECKS_URL = "https://royaleapi.com/decks/popular?time=1d&sort=rating&size=30&players=PvP&min_elixir=1&max_elixir=9&evo=2&min_cycle_elixir=4&max_cycle_elixir=28&mode=detail&type=Ranked&&&global_exclude=false"
 
 
 def fetch_html(url):
